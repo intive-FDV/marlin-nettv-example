@@ -1,0 +1,28 @@
+<object id="video" type="application/oipfContentAccess" data="<%= cad_url %>" width="640" height="360"></object>
+<script type="text/javascript">
+  <![CDATA[
+  (function () {
+    var videoPlayStates = {
+      0:'stopped',
+      1:'playing',
+      2:'paused',
+      3:'connecting',
+      4:'buffering',
+      5:'finished',
+      6:'error'
+    };
+
+    var video = document.getElementById('video');
+    video.onPlayStateChange = function() {
+      log('Video changed state to: ' + videoPlayStates[video.playState]);
+    };
+
+    function playVideo() {
+      log('playing video');
+      video.play(1);
+    }
+
+    drmRegister(playVideo);
+  })();
+  ]]>
+</script>

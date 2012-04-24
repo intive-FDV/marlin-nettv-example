@@ -1,0 +1,3 @@
+# Change this settings as described on the README file.
+customer_authenticator: 123,putYourCustomerAuthenticatorHere
+hms_hostname: ms3-gen.service.hostedmarlin.com

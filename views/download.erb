@@ -1,0 +1,21 @@
+<object id="downloadTrigger" type="application/downloadTrigger"></object>
+<script type="text/javascript">
+  <![CDATA[
+  (function () {
+    function downloadVideo() {
+      log('downloading video');
+      $.ajax("<%= cad_url %>", {
+        dataType:'text',
+        success:function (cad) {
+          log('cad downloaded: ' + cad);
+          var downloadTrigger = document.getElementById('downloadTrigger');
+          downloadTrigger.checkDownloadPossible(cad);
+          downloadTrigger.registerDownload(cad, true);
+        }
+      });
+    }
+
+    drmRegister(downloadVideo);
+  })();
+  ]]>
+</script>
