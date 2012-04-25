@@ -1,0 +1,41 @@
+#! /usr/bin/env ruby
+
+require 'optparse'
+require 'yaml'
+
+options = {}
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{__FILE__} [options] FILE"
+  opts.on '--key [KEY]', 'Cryptographic key. Use a default one if not specified.' do |key|
+    options[:key] = key
+  end
+
+  opts.on '--id [ID]', 'Content ID. Use "urn:marlin:organization:example:<FILE>" if not specified' do |id|
+    options[:id] = id
+  end
+
+  opts.parse!
+
+  # Receives only one file to encrypt.
+  if ARGV.size != 1
+    puts opts.help
+    exit
+  end
+end
+
+input_filename   = ARGV[0]
+trimmed_filename = File.basename(input_filename, '.*')
+output_dir       = File.dirname(__FILE__) + '/contents/'
+output_filename  = output_dir + trimmed_filename + '.dcf'
+yaml_filename    = output_dir + trimmed_filename + '.yml'
+
+# Default options.
+options[:key] ||= '000102030405060708090a0b0c0d0e0f'
+options[:id]  ||= "urn:marlin:organization:example:#{trimmed_filename}"
+
+# Generate encrypted content.
+system "mp4dcfpackager --method CBC --content-type video/mp4 --content-id #{options[:id]} --key #{options[:key]}:00000000000000000000000000000000 #{input_filename} #{output_filename}" or exit
+
+# Generate YAML file.
+File.open(yaml_filename, 'w') { |f| f.write(options.to_yaml) }

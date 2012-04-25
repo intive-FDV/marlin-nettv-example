@@ -51,6 +51,7 @@ end
 get '/license/:content_id', :provides => :xml do |content_id|
 
   content = content_info(content_id)
+  not_found unless content
 
   RestClient.get hms_token_api_url, :params => {
       :actionTokenType => '1', # 1 -> Marlin Broadband License Token.
@@ -58,8 +59,8 @@ get '/license/:content_id', :provides => :xml do |content_id|
       :customerAuthenticator => settings.customer_authenticator,
       :userId => USER_ID, # See comment about user id above.
       :userKey => USER_KEY,
-      :contentId => content[:content_id],
-      :contentKey => content[:content_key],
+      :contentId => content[:id],
+      :contentKey => content[:key],
       :rightsType => 'Rental',
       :'rental.periodEndTime' => '+9999',
       :'rental.playDuration' => '9999'
@@ -67,7 +68,15 @@ get '/license/:content_id', :provides => :xml do |content_id|
 end
 
 get '/cad/:content_id', :provides => :xml do |content_id|
-  erb :cad, :locals => content_info(content_id), :layout => false
+  content = content_info(content_id)
+  not_found unless content
+
+  erb :cad, :layout => false, :locals => {
+      :content => content,
+      :origin_site => base_url,
+      :content_url => "#{base_url}/contents/#{content_id}.dcf",
+      :rights_url => "#{base_url}/license/#{content_id}"
+  }
 end
 
 helpers do
@@ -86,19 +95,19 @@ helpers do
   end
 
   def content_info(content_id)
-    #path = settings.root + '/contents/' + content_id + '.yml'
-    #content = YAML.load(File.read(path))
-    {
-        :content_id => "urn:marlin:organization:fdvs:#{content_id}",
-        :content_key => '000102030405060708090a0b0c0d0e0f',
-        :title => "Title #{content_id}",
-        :synopsis => "Synopsis #{content_id}",
-        :origin_site => base_url,
-        :origin_site_name => 'Marlin NetTV Example',
-        :content_url => "#{base_url}/contents/#{content_id}.dcf",
-        :artwork_url => 'http://laughingsquid.com/wp-content/uploads/nyan.jpg',
-        :rights_url => "#{base_url}/license/#{content_id}"
-    }
+    path = settings.root + '/contents/' + content_id + '.yml'
+    content = YAML.load(File.read(path))
+
+    raise 'Content has not key' unless content[:key]
+
+    content[:id] ||= "urn:marlin:organization:example:#{content_id}"
+    content[:title] ||= content_id
+    content[:synopsis] ||= content_id
+
+    content
+  rescue Errno::ENOENT
+    # .yml file was not found.
+    nil
   end
 
   def base_url
