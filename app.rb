@@ -9,7 +9,7 @@ require 'yaml'
 config_file 'config.yml'
 
 # Reuse the same user credentials for all the requests.
-USER_ID = '555556'
+USER_ID  = '555556'
 USER_KEY = '000102030405060708090a0b0c0d0124'
 
 get '/' do
@@ -54,16 +54,16 @@ get '/license/:content_id', :provides => :xml do |content_id|
   not_found unless content
 
   RestClient.get hms_token_api_url, :params => {
-      :actionTokenType => '1', # 1 -> Marlin Broadband License Token.
-      :errorFormat => 'json',
-      :customerAuthenticator => settings.customer_authenticator,
-      :userId => USER_ID, # See comment about user id above.
-      :userKey => USER_KEY,
-      :contentId => content[:id],
-      :contentKey => content[:key],
-      :rightsType => 'Rental',
+      :actionTokenType        => '1', # 1 -> Marlin Broadband License Token.
+      :errorFormat            => 'json',
+      :customerAuthenticator  => settings.customer_authenticator,
+      :userId                 => USER_ID, # See comment about user id above.
+      :userKey                => USER_KEY,
+      :contentId              => content[:id],
+      :contentKey             => content[:key],
+      :rightsType             => 'Rental',
       :'rental.periodEndTime' => '+9999',
-      :'rental.playDuration' => '9999'
+      :'rental.playDuration'  => '9999'
   }
 end
 
@@ -71,12 +71,7 @@ get '/cad/:content_id', :provides => :xml do |content_id|
   content = content_info(content_id)
   not_found unless content
 
-  erb :cad, :layout => false, :locals => {
-      :content => content,
-      :origin_site => base_url,
-      :content_url => "#{base_url}/contents/#{content_id}.dcf",
-      :rights_url => "#{base_url}/license/#{content_id}"
-  }
+  erb :cad, :locals => content, :layout => false
 end
 
 helpers do
@@ -100,17 +95,15 @@ helpers do
 
     raise 'Content has not key' unless content[:key]
 
-    content[:id] ||= "urn:marlin:organization:example:#{content_id}"
-    content[:title] ||= content_id
-    content[:synopsis] ||= content_id
+    content[:id]       ||= "urn:marlin:organization:example:#{content_id}"
+    content[:title]    ||= content_id
+    content[:synopsis] ||= content[:title]
+    content[:url]      ||= "#{base_url}/contents/#{content_id}.dcf"
+    content[:rights_url] = "#{base_url}/license/#{content_id}"
 
     content
   rescue Errno::ENOENT
     # .yml file was not found.
     nil
-  end
-
-  def base_url
-    "#{request.env['rack.url_scheme']}://#{request.env['HTTP_HOST']}"
   end
 end
