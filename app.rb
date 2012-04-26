@@ -13,7 +13,7 @@ USER_ID  = '555556'
 USER_KEY = '000102030405060708090a0b0c0d0124'
 
 get '/' do
-
+  erb :content_list, :locals => {:contents => all_contents}
 end
 
 get '/download/:content_id' do |content_id|
@@ -89,17 +89,30 @@ helpers do
     'https://' + settings.hms_hostname + '/hms/bb/token'
   end
 
-  def content_info(content_id)
-    path = settings.root + '/contents/' + content_id + '.yml'
-    content = YAML.load(File.read(path))
+  def all_contents
+    yml_filenames = Dir.glob(settings.root + '/contents/*.yml')
+    yml_filenames.map { |filename|
+      id = filename.match(/\/contents\/(.*)\.yml/)[1]
+      content_info(id)
+    }
+  end
+
+  def content_info(id)
+    filename = settings.root + '/contents/' + id + '.yml'
+    content = YAML.load(File.read(filename))
 
     raise 'Content has not key' unless content[:key]
 
-    content[:id]       ||= "urn:marlin:organization:example:#{content_id}"
-    content[:title]    ||= content_id
+    # Complete HMS information with default values.
+    content[:id]       ||= "urn:marlin:organization:example:#{id}"
+    content[:title]    ||= id
     content[:synopsis] ||= content[:title]
-    content[:url]      ||= "#{base_url}/contents/#{content_id}.dcf"
-    content[:rights_url] = "#{base_url}/license/#{content_id}"
+    content[:url]      ||= url("/contents/#{id}.dcf")
+
+    # Other useful URLs.
+    content[:rights_url]   = url("/license/#{id}")
+    content[:download_url] = url("/download/#{id}")
+    content[:stream_url]   = url("/stream/#{id}")
 
     content
   rescue Errno::ENOENT
