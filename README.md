@@ -66,6 +66,10 @@ The `.yml` for the content needs to have its cryptographic key, but it can also 
  - `synopsis`: Default is `title`
  - `url`: The URL where the `.dcf` file is at. By default is `<your app instance base URL>/contents/<filenam without extension>.dcf`
 
+### Watch the videos on the TV!
+
+Now that you have some videos packaged, you should be able to visit <http://localhost:9292/> on your NEt TV device and see a list of available videos with "Download" and "Stream" links. These links should take you to a screen for downloading and watching or directly watching the movie respectively.
+
 [marlin]: http://en.wikipedia.org/wiki/Marlin_(DRM)
 [hms]: https://www.hostedmarlin.com/
 [sinatra]: http://www.sinatrarb.com
