@@ -12,7 +12,8 @@ function log(message) {
     if (!log) return;
 
     log.style.visibility = 'visible';
-    log.innerHTML += '<p>' + encodeHtml(message) + '</p>'
+    log.innerHTML += '<p>' + encodeHtml(message) + '</p>';
+    log.scrollTop = log.scrollHeight;
 }
 
 // Simple XMLHttpRequest wrapper for making GET requests. Calls options.success
@@ -50,7 +51,7 @@ function drmRegister(onSuccess) {
                 log('DRM rights error.');
             };
 
-            log('Sending register token as DRM message.');
+            log('Sending register token as DRM message...');
             drmAgent.sendDRMMessage('application/vnd.marlin.drm.actiontoken+xml', registerToken, 'urn:dvb:casystemid:19188');
         },
         error:function () {

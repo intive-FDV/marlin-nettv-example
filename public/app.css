@@ -1,19 +1,21 @@
 body {
-  margin: 0px;
-  overflow: hidden;
-  background-color: black;
-  color: white;
+    margin: 0px;
+    overflow: hidden;
+    background-color: black;
+    color: white;
 }
 
 #log {
-  top: 50px;
-  left: 50px;
-  width: 960px;
-  height: 200px;
-  color: green;
-  position: absolute;
-  z-index: 100;
-  visibility: hidden;
+    bottom: 50px;
+    left: 50px;
+    width: 960px;
+    max-height: 300px;
+    color: green;
+    position: absolute;
+    z-index: 100;
+    visibility: hidden;
+    overflow: hidden;
+    border: 1px dashed green;
 }
 
 #drmAgent {
