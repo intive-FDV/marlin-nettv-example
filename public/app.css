@@ -23,6 +23,17 @@ body {
     height: 1;
 }
 
+h1 {
+    text-align: center;
+}
+
+.footer {
+    bottom: 10px;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+}
+
 :focus {
     border: 1px solid white;
 }
