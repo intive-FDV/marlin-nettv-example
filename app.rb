@@ -14,6 +14,7 @@ USER_ID  = '555556'
 USER_KEY = '000102030405060708090a0b0c0d0124'
 
 get '/' do
+  set_ce_html_content_type!
   erb :content_list, :locals => {:contents => all_contents}
 end
 
