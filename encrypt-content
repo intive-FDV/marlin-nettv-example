@@ -35,7 +35,8 @@ options[:key] ||= '000102030405060708090a0b0c0d0e0f'
 options[:id]  ||= "urn:marlin:organization:example:#{trimmed_filename}"
 
 # Generate encrypted content.
-system "mp4dcfpackager --method CBC --content-type video/mp4 --content-id #{options[:id]} --key #{options[:key]}:00000000000000000000000000000000 #{input_filename} #{output_filename}" or exit
+`mp4dcfpackager --method CBC --content-type video/mp4 --content-id #{options[:id]} --key #{options[:key]}:00000000000000000000000000000000 #{input_filename} #{output_filename}`
+exit unless $?.success?
 
 # Generate YAML file.
 File.open(yaml_filename, 'w') { |f| f.write(options.to_yaml) }
