@@ -5,8 +5,7 @@
   (function () {
     function downloadVideo() {
       log('downloading video');
-      $.ajax("<%= cad_url %>", {
-        dataType:'text',
+      ajaxGet("<%= cad_url %>", {
         success:function (cad) {
           log('cad downloaded: ' + cad);
           var downloadTrigger = document.getElementById('downloadTrigger');
