@@ -4,9 +4,9 @@ This is an example application for the Net TV plataform showcasing how to downlo
 
 This example _is not_ a fully function video webstore (e.g. it doesn't manage users properly nor provides a pretty user interface), it is just a barebone implementation to test Marlin DRM content on a Net TV that you may hack around to integrate in your app. Notice also that the example was tested with a specific Philips Net TV device, so thorough Net TV compliance is absolutely not guaranteed; pull requests and issues are more than welcome of course :)
 
-The server-side of the application (the "webstore", in Marlin-terms) is coded in Ruby using [Sinatra](sinatra), but it should not be necessary to have prevous experience with Ruby nor Sinatra to get it running or to understand what the code does, as it's very simple and quite thoroughly commented.
+The server-side of the application (the "webstore", in Marlin-terms) is coded in Ruby using [Sinatra][sinatra], but it should not be necessary to have prevous experience with Ruby nor Sinatra to get it running or to understand what the code does, as it's very simple and quite thoroughly commented.
 
-This example was made following [this tutorial](hms-tutorial).
+This example was made following [this tutorial][hms-tutorial].
 
 You can see the example working at <http://marlin-nettv-example.heroku.com/> (note that you should visit this link with a Net TV device).
 
@@ -41,13 +41,13 @@ To verify that your HMS credentials work properly, you can visit <http://localho
 
 ### Package some content.
 
-This is step is not necessary to get the application running, as it already comes with a couple of very short sample videos taken from the awesome [Sintel](sintel) and [Elephants Dream](elephants-dream) movies.
+This is step is not necessary to get the application running, as it already comes with a couple of very short sample videos taken from the awesome [Sintel][sintel] and [Elephants Dream][elephants-dream] movies.
 
-To encrypt an MP4 video you should use the `mp4dcfpackager` command as described [here](hms-packaging-content). For example:
+To encrypt an MP4 video you should use the `mp4dcfpackager` command as described [here][hms-packaging-content]. For example:
 
     mp4dcfpackager --method CBC --content-type video/mp4 --content-id urn:marlin:organization:yourorganization:big-buck-bunny --key f7782e51dd43bac40861a4075647e874:00000000000000000000000000000000 big-buck-bunny.mp4 contents/big-buck-bunny.dcf
 
-Then you must also create a `contents/big-buck-bunny.yml` [YAML](yaml) file, which shoud specify the key used to encript the file so the application can then use it to acquire Marlin Broadband License tokens. The file should look something like this:
+Then you must also create a `contents/big-buck-bunny.yml` [YAML][yaml] file, which shoud specify the key used to encript the file so the application can then use it to acquire Marlin Broadband License tokens. The file should look something like this:
 
     ---
     :key: f7782e51dd43bac40861a4075647e874
