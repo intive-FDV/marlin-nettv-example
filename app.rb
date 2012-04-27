@@ -18,12 +18,12 @@ end
 
 get '/download/:content_id' do |content_id|
   set_ce_html_content_type!
-  erb :download, :locals => {:cad_url => url('/cad/' + content_id)}
+  erb :download, :locals => content_info(content_id)
 end
 
 get '/stream/:content_id' do |content_id|
   set_ce_html_content_type!
-  erb :stream, :locals => {:cad_url => url('/cad/' + content_id)}
+  erb :stream, :locals => content_info(content_id)
 end
 
 get '/contents/:content_id.dcf' do |content_id|
@@ -49,9 +49,7 @@ get '/register', :provides => :xml do
 end
 
 get '/license/:content_id', :provides => :xml do |content_id|
-
   content = content_info(content_id)
-  not_found unless content
 
   RestClient.get hms_token_api_url, :params => {
       :actionTokenType        => '1', # 1 -> Marlin Broadband License Token.
@@ -68,10 +66,7 @@ get '/license/:content_id', :provides => :xml do |content_id|
 end
 
 get '/cad/:content_id', :provides => :xml do |content_id|
-  content = content_info(content_id)
-  not_found unless content
-
-  erb :cad, :locals => content, :layout => false
+  erb :cad, :locals => content_info(content_id), :layout => false
 end
 
 helpers do
@@ -110,13 +105,14 @@ helpers do
     content[:url]      ||= url("/contents/#{id}.dcf")
 
     # Other useful URLs.
-    content[:rights_url]   = url("/license/#{id}")
-    content[:download_url] = url("/download/#{id}")
-    content[:stream_url]   = url("/stream/#{id}")
+    content[:rights_url]   = url('/license/' + id)
+    content[:download_url] = url('/download/' + id)
+    content[:stream_url]   = url('/stream/' + id)
+    content[:cad_url]   = url('/stream/' + id)
 
     content
   rescue Errno::ENOENT
-    # .yml file was not found.
-    nil
+    # .yml file does not exist. Show a 404 Not Found.
+    not_found
   end
 end
