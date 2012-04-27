@@ -9,6 +9,7 @@ require 'yaml'
 config_file 'config.yml'
 
 # Reuse the same user credentials for all the requests.
+# See comment on `get '/register'`.
 USER_ID  = '555556'
 USER_KEY = '000102030405060708090a0b0c0d0124'
 
@@ -26,20 +27,23 @@ get '/stream/:content_id' do |content_id|
   erb :stream, :locals => content_info(content_id)
 end
 
+# Serve a DCF file directly.
 get '/contents/:content_id.dcf' do |content_id|
   path = settings.root + '/contents/' + content_id + '.dcf'
   send_file(path)
 end
 
+# Acquires a Marlin Broadband Registration action token and serves it directly.
 get '/register', :provides => :xml do
-  # Here you should use the user id of your application, associated with the
-  # user that made the request. The user key should be a 128-bit hex key
-  # associated with that id. For the purpose of this example, we are using the
-  # same credentials for all the requests.
+  # Here you should use your real user credentials, so this request should be
+  # authenticated. The user key should be a 128-bit hex key associated with the
+  # user ID. For the purpose of this example, we are using the same credentials
+  # for all the requests.
   user_id = USER_ID
   user_key = USER_KEY
 
-  RestClient.get hms_token_api_url, :params => {
+  # Make the actual API call to the Hosted Marlin Service.
+  RestClient.get hms_api_url, :params => {
       :actionTokenType => '0', # 0 -> Marlin Broadband Registration Token.
       :errorFormat => 'json',
       :customerAuthenticator => settings.customer_authenticator,
@@ -48,10 +52,11 @@ get '/register', :provides => :xml do
   }
 end
 
+# Acquires a User-Bound Marlin Broadband License transaction token, like a boss.
 get '/license/:content_id', :provides => :xml do |content_id|
   content = content_info(content_id)
 
-  RestClient.get hms_token_api_url, :params => {
+  RestClient.get hms_api_url, :params => {
       :actionTokenType        => '1', # 1 -> Marlin Broadband License Token.
       :errorFormat            => 'json',
       :customerAuthenticator  => settings.customer_authenticator,
@@ -60,16 +65,18 @@ get '/license/:content_id', :provides => :xml do |content_id|
       :contentId              => content[:id],
       :contentKey             => content[:key],
       :rightsType             => 'Rental',
-      :'rental.periodEndTime' => '+9999',
+      :'rental.periodEndTime' => '+9999', # Use appropriate values here.
       :'rental.playDuration'  => '9999'
   }
 end
 
+# Returns a Content Access Descriptor (CAD).
 get '/cad/:content_id', :provides => :xml do |content_id|
   erb :cad, :locals => content_info(content_id), :layout => false
 end
 
 helpers do
+  # Sets the content type of the response to either CE-HTML or XML.
   def set_ce_html_content_type!
     if request.user_agent =~ /Opera\//
       # Opera and NetTV devices recognize CE-HTML mime type.
@@ -80,10 +87,12 @@ helpers do
     end
   end
 
-  def hms_token_api_url
+  # Hosted Marlin Service API base URL.
+  def hms_api_url
     'https://' + settings.hms_hostname + '/hms/bb/token'
   end
 
+  # Returns a list of all the videos under /contents directory.
   def all_contents
     yml_filenames = Dir.glob(settings.root + '/contents/*.yml')
     yml_filenames.map { |filename|
@@ -92,6 +101,8 @@ helpers do
     }
   end
 
+  # Returns a hash with the information for a given content ID. The information
+  # is taken from the corresponding YAML file under /contents directory.
   def content_info(id)
     filename = settings.root + '/contents/' + id + '.yml'
     content = YAML.load(File.read(filename))
