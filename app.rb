@@ -126,7 +126,7 @@ helpers do
     content[:rights_url]   = url('/license/' + id)
     content[:download_url] = url('/download/' + id)
     content[:stream_url]   = url('/stream/' + id)
-    content[:cad_url]   = url('/stream/' + id)
+    content[:cad_url]      = url('/cad/' + id)
 
     content
   rescue Errno::ENOENT
