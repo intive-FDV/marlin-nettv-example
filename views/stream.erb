@@ -19,10 +19,11 @@
     };
 
     function playVideo() {
-      log('playing video');
+      log('Playing video...');
       video.play(1);
     }
 
+    // Start playing video once we're registered.
     drmRegister(playVideo);
   })();
   ]]>

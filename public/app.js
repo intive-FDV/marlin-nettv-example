@@ -34,9 +34,11 @@ function ajaxGet(url, options) {
 // using the NetTV drmAgent plugin. If everything goes right calls the onSuccess
 // callback.
 function drmRegister(onSuccess) {
-    log('Downloading register token...');
+    log('Acquiring register token...');
     ajaxGet('/register', {
         success:function (registerToken) {
+            log('Register token acquired successfully: ' + registerToken);
+
             var drmAgent = document.getElementById('drmAgent');
             drmAgent.onDRMMessageResult = function (msgID, resultMsg, resultCode) {
                 log('DRM message result msgID=' + msgID + ' resultMsg=' + resultMsg + ' resultCode=' + resultCode);
@@ -45,11 +47,11 @@ function drmRegister(onSuccess) {
                 }
             };
             drmAgent.onDRMRightsError = function () {
-                log('DRM rights error');
+                log('DRM rights error.');
             };
-            log('drmAgent.sendDRMMessage: ' + drmAgent.sendDRMMessage);
-            drmAgent.sendDRMMessage("application/vnd.marlin.drm.actiontoken+xml", registerToken, 'urn:dvb:casystemid:19188');
-            log("Sending to drmagent: " + registerToken);
+
+            log('Sending register token as DRM message.');
+            drmAgent.sendDRMMessage('application/vnd.marlin.drm.actiontoken+xml', registerToken, 'urn:dvb:casystemid:19188');
         },
         error:function () {
             log('Error loading register token');

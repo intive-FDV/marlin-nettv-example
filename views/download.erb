@@ -4,13 +4,16 @@
   <![CDATA[
   (function () {
     function downloadVideo() {
-      log('downloading video');
+      log('Downloading Content Access Descriptor (CAD)');
       ajaxGet("<%= cad_url %>", {
         success:function (cad) {
-          log('cad downloaded: ' + cad);
+          log('CAD downloaded: ' + cad);
           var downloadTrigger = document.getElementById('downloadTrigger');
           downloadTrigger.checkDownloadPossible(cad);
           downloadTrigger.registerDownload(cad, true);
+        },
+        error:function () {
+          log('Error downloading CAD');
         }
       });
     }
